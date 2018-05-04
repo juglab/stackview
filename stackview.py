@@ -1,8 +1,9 @@
 import numpy as np
-import matplotlib
-matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
+plt.switch_backend('qt5agg') # only good backend available!
 import sys
+
+from . import example
 
 class Stack(object):
     """
@@ -93,11 +94,12 @@ class Stack(object):
         # self.overlay[100:, :50] = 1
 
         fig = plt.figure()
-        fig.gca().imshow(stack[tuple(self.idx)])
+        fig.gca().imshow(stack[tuple(self.idx)], interpolation='nearest')
         fig.gca().set_aspect('equal', 'datalim')
         fig.gca().set_position([0, 0, 1, 1])
         
         fig.canvas.mpl_connect('key_press_event', self.press)
+        remove_keymap_conflicts({'k'})
         # fig.gca().imshow(self.overlay[self.idx[-1]])
 
         print(fig, self.idx)
@@ -105,3 +107,14 @@ class Stack(object):
         self.mul = 1
         self.autocolor = True
         self.w = w
+
+def remove_keymap_conflicts(new_keys_set):
+    """
+    from https://www.datacamp.com/community/tutorials/matplotlib-3d-volumetric-data
+    """
+    for prop in plt.rcParams:
+        if prop.startswith('keymap.'):
+            keys = plt.rcParams[prop]
+            remove_list = set(keys) & new_keys_set
+            for key in remove_list:
+                keys.remove(key)
