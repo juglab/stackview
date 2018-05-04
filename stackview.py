@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('qt5agg') # only good backend available!
+from matplotlib import text
 import sys
 
 from . import example
@@ -25,6 +26,7 @@ class Stack(object):
                 pt += 1
             pt %= dimlen
             self.idx[self.zdim] = pt
+            print('\r Slice: '+str(self.idx)+' '*5, end="")
         elif event.key == 'j': # Down
             dimlen = self.stack.shape[self.zdim]
             pt = self.idx[self.zdim]
@@ -34,9 +36,10 @@ class Stack(object):
                 pt -= 1
             pt %= dimlen
             self.idx[self.zdim] = pt
+            print('\r Slice: '+str(self.idx)+' '*5, end="")
         elif event.key in {'1', '2', '3'}:
             self.zdim = int(event.key)-1
-            print('idx:', self.idx, 'zdim:', self.zdim, 'mul:', self.mul, 'autocolor:', self.autocolor)
+            print('\r'+'idx:', self.idx, 'zdim:', self.zdim, 'mul:', self.mul, 'autocolor:', self.autocolor, end="")
         elif event.key == 'F': # Faster
             self.mul += 1
         elif event.key == 'S': # Slower
@@ -110,6 +113,7 @@ class Stack(object):
 
         fig = plt.figure()
         fig.gca().imshow(stack[tuple(self.idx)], interpolation='nearest')
+        print('\r Slice: '+str(self.idx)+' '*5, end="")
         fig.gca().set_aspect('equal', 'datalim')
         fig.gca().set_position([0, 0, 1, 1])
         
