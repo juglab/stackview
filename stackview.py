@@ -45,6 +45,21 @@ class Stack(object):
             self.autocolor = not self.autocolor
         elif event.key == 'V':
             assert False
+        elif event.key == 'R':
+            # cyclic permutation of last three (non-color) dimensions
+            p = np.arange(self.stack.ndim)
+            if self.stack.shape[-1]==3:
+                temp = p[-4]
+                p[-4] = p[-3]
+                p[-3] = p[-2]
+                p[-2] = temp
+            else:
+                temp = p[-3]
+                p[-3] = p[-2]
+                p[-2] = p[-1]
+                p[-1] = temp
+            self.stack = self.stack.transpose(p)
+
         # elif event.key == 'W':
         #     self.w = int(input('gimme a w: '))
         
