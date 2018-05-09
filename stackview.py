@@ -60,6 +60,9 @@ class Stack(object):
                 p[-2] = p[-1]
                 p[-1] = temp
             self.stack = self.stack.transpose(p)
+            if self.idx[self.zdim] >= self.stack.shape[0]:
+            	self.idx[self.zdim] = 0
+            	print('\r Slice: '+str(self.idx)+' '*5, end="")
 
         # elif event.key == 'W':
         #     self.w = int(input('gimme a w: '))
