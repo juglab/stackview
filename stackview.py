@@ -4,8 +4,6 @@ plt.switch_backend('qt5agg') # only good backend available!
 from matplotlib import text
 import sys
 
-from . import example
-
 class Stack(object):
     """
     Quick and dirty viewer for ndarrays with ndim>2.
