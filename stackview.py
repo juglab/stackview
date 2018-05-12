@@ -127,6 +127,7 @@ class Stack(object):
         self.mul = 1
         self.autocolor = True
         self.w = w
+        self.img = self.fig.axes[0].images[0]
 
 def remove_keymap_conflicts(new_keys_set):
     """
