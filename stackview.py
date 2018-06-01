@@ -94,19 +94,35 @@ class Stack(object):
 
     def __init__(self, stack, customclick=None, colorchan=False, w=0, decay=False, norm=True):
         if type(stack)==list:
-            stack = np.stack(stack).astype(np.float)
-            print(stack.dtype)
+            stack = np.stack(stack)
+        if 'float' in str(stack.dtype):
+            stack = stack.astype(np.float32)
         self.zdim = 0
+        print(stack.dtype)
         # TODO: this will give a bug when we have 3channel color imgs.
             
+        if stack.shape[-1] == 2:
+            colorchan = True
+            stack = np.stack([stack[...,0], 0.5*stack[...,1], 0.5*stack[...,1]], axis=-1)            
+        elif stack.shape[-1] == 3:
+            colorchan = True
+        
         if colorchan:
-            if stack.shape[-1]==2:
-                stack = np.stack([stack[...,0], 0.5*stack[...,1], 0.5*stack[...,1]], axis=-1)
             self.idx = np.array([0]*(stack.ndim-3))
             self.ndim = stack.ndim-3
+            normax = np.arange(stack.ndim)[:stack.ndim-1]
         else:
             self.idx = np.array([0]*(stack.ndim-2))
             self.ndim = stack.ndim-2
+            normax = np.arange(stack.ndim)
+
+
+        if 'float' in str(stack.dtype):
+            mi,ma = np.percentile(stack,[2,99.5], axis=normax)
+            stack = (stack-mi)/(ma-mi)
+            stack = np.clip(stack, 0, 1)
+
+
         self.stack = stack
         # self.overlay = np.zeros(stack.shape[-3:] + (4,), dtype='float')
         # self.overlay[:100, :50] = 4
@@ -128,6 +144,17 @@ class Stack(object):
         self.autocolor = True
         self.w = w
         self.img = self.fig.axes[0].images[0]
+
+    def get_current_xy_slice(self):
+      x0,x1 = self.fig.axes[0].get_xlim()
+      x0,x1 = int(x0), int(x1)
+      y1,y0 = self.fig.axes[0].get_ylim() # y is inverted!
+      y0,y1 = int(y0), int(y1)
+      ss = [slice(None),] * self.stack.ndim
+      ss[-2] = slice(y0,y1)
+      ss[-1] = slice(x0,x1)
+      return ss
+
 
 def remove_keymap_conflicts(new_keys_set):
     """
